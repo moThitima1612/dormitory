@@ -1,0 +1,72 @@
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { openDatabase } from './db/database.mjs';
+import { seedData } from './db/seed.mjs';
+
+const root=path.dirname(fileURLToPath(import.meta.url));
+const filename=path.join(root,'preview-checks',`database-unit-${randomUUID()}.sqlite`);
+let database=openDatabase(filename);
+const payload=state=>({revision:state.meta.revision,mutationId:randomUUID(),data:state});
+let state=database.readState();
+assert.equal(state.rooms.length,24);assert.equal(state.tenants.length,18);assert.equal(state.invoices.length,54);
+state.rooms[0].rate=3900;
+const write=payload(state);
+database.saveState(write);
+const revision=database.readState().meta.revision;
+database.saveState(write);
+assert.equal(database.readState().meta.revision,revision);
+assert.throws(()=>database.saveState({...write,mutationId:randomUUID()}),error=>error.status===409);
+assert.equal(database.readState().rooms[0].rate,3900);
+console.log('PASS: transactional state, idempotent retry, stale-write conflict');
+
+database.close();database=openDatabase(filename);
+assert.equal(database.readState().rooms[0].rate,3900);
+assert.equal(database.readState().meta.revision,revision);
+console.log('PASS: persistence across database close/reopen');
+
+state=database.readState();
+state.tenants=state.tenants.filter(tenant=>tenant.id!=='t3');
+database.saveState(payload(state));
+assert.equal(database.readState().tenants.length,17);
+assert.equal(database.readState().invoices.length,54);
+assert.equal(database.db.prepare("SELECT active FROM tenants WHERE id='t3'").get().active,0);
+console.log('PASS: tenant move-out preserves invoice history and archived tenant');
+
+state=database.readState();
+state.tenants.push({...state.tenants[0],id:randomUUID()});
+const before=database.readState().meta.revision;
+assert.throws(()=>database.saveState(payload(state)),error=>error.status===400);
+assert.equal(database.readState().meta.revision,before);
+state=database.readState();state.invoices[0].water=-1;
+assert.throws(()=>database.saveState(payload(state)),error=>error.status===400);
+assert.equal(database.readState().meta.revision,before);
+console.log('PASS: duplicate occupancy and negative amounts rejected without changes');
+
+database.db.exec("CREATE TEMP TRIGGER reject_test_amount BEFORE UPDATE OF rent ON invoices WHEN NEW.rent=9999 BEGIN SELECT RAISE(ABORT,'rollback test'); END;");
+state=database.readState();state.rooms[0].rate=5000;state.invoices[0].rent=9999;
+assert.throws(()=>database.saveState(payload(state)));
+assert.equal(database.readState().rooms[0].rate,3900);
+assert.equal(database.readState().meta.revision,before);
+database.db.exec('DROP TRIGGER reject_test_amount');
+const plan=database.db.prepare('EXPLAIN QUERY PLAN SELECT * FROM invoices WHERE month=? ORDER BY room_id').all('2026-10');
+assert.ok(plan.some(row=>row.detail.includes('idx_invoices_month_room')));
+assert.equal(database.db.prepare('PRAGMA foreign_key_check').all().length,0);
+assert.equal(database.db.prepare('PRAGMA integrity_check').get().integrity_check,'ok');
+console.log('PASS: database failure rolls back whole write; indexes and integrity valid');
+database.close();
+
+const imported=openDatabase(path.join(root,'preview-checks',`database-import-${randomUUID()}.sqlite`));
+const legacy=seedData();legacy.tenants=legacy.tenants.filter(tenant=>tenant.id!=='t3');legacy.rooms[7].rate=4400;
+const request={revision:0,mutationId:randomUUID(),data:legacy};
+imported.saveState(request,{importing:true});
+assert.equal(imported.readState().rooms[7].rate,4400);
+assert.equal(imported.readState().tenants.length,17);
+assert.equal(imported.readState().invoices.length,54);
+assert.equal(imported.readState().meta.source,'imported');
+assert.equal(imported.readState().meta.importAllowed,false);
+assert.throws(()=>imported.saveState({...request,revision:1,mutationId:randomUUID()},{importing:true}),error=>error.status===409);
+assert.equal(imported.readState().rooms[7].rate,4400);
+imported.close();
+console.log('PASS: atomic legacy import, archived references, import cannot overwrite saved DB');

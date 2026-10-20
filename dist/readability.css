@@ -1,0 +1,62 @@
+/* Keep Thai labels and secondary information readable at every screen size. */
+:root { --muted: #65796e; }
+.brand small { font-size: 12px; letter-spacing: 1px; }
+.nav-label, .nav-count, .occupancy-note > div:first-child,
+.occupancy-note small, .user-profile small, .demo-tag,
+.eyebrow, .stat-bottom, .panel-subtitle, .legend, .floor-label,
+.room-tile small, .panel-summary, .count-pill, .person small,
+.overdue-amount small, .insight p, .table-person small,
+.room-number, .table-date, .page-footer, .room-card p,
+.toolbar .toolbar-count, .field-hint, .detail-metrics small,
+.confirmation-note, .view-note { font-size: 12px; }
+.breadcrumb, .property-switch strong, .user-profile strong,
+.month-picker, .month-picker select, .button, .button.small,
+.text-button, .panel-header .text-button, .stat-top,
+.stat-value small, .room-tile strong, .person strong,
+.overdue-amount, .overdue-footer button, .insight strong,
+table, thead, .table-person strong, .badge, .room-card .badge,
+.room-card-details, .search input, .toolbar select,
+.filter-chip, .field label, .toast { font-size: 14px; }
+p, .page-heading p { font-size: 16px; }
+.room-avatar { font-size: 12px; }
+.eyebrow, .breadcrumb, .stat-top, .stat-bottom,
+.panel-subtitle, .legend, .floor-label, .panel-summary,
+.person small, .overdue-amount small, .insight p,
+thead, .table-person small, .table-date, .page-footer,
+.toolbar .toolbar-count, .field-hint, .detail-metrics small {
+  color: #65796e;
+}
+.nav-label, .occupancy-note small, .user-profile small { color: #a5beb0; }
+.occupancy-note > div:first-child { color: #c5dacf; }
+.room-tile { color: #4b7459; }
+.room-tile.vacant, .room-tile.vacant strong { color: #657d6c; }
+.room-tile.late, .room-tile.late strong { color: #94702f; }
+.room-tile.repair, .room-tile.repair strong { color: #65727a; }
+.badge { color: #477553; }
+.badge.late { color: #946423; }
+.badge.pending { color: #506d96; }
+.badge.vacant { color: #57725c; }
+.badge.repair { color: #637078; }
+.overdue-amount, .stat-bottom .warn { color: #98682d; }
+.room-card-top { flex-wrap: wrap; }
+.overdue-item { flex-wrap: wrap; }
+.overdue-item .person { min-width: 80px; }
+.overdue-amount { margin-left: auto; }
+.panel-summary { flex-wrap: wrap; }
+.sidebar-bottom { padding-top: 24px; }
+@media (max-width: 1250px) and (min-width: 1051px) {
+  .room-tile small { display: none; }
+}
+@media (max-width: 760px) {
+  .page-heading p { font-size: 14px; }
+  .eyebrow { letter-spacing: 1px; }
+  .stat-top { font-size: 14px; align-items: flex-start; }
+  .stat-icon { flex-shrink: 0; }
+  .stat-value { margin-top: 14px; }
+  .room-row { gap: 6px; }
+  .room-tile { min-height: 76px; }
+  .room-tile small { font-size: 12px; white-space: normal; }
+  .room-tile strong { font-size: 14px; }
+  .badge { font-size: 12px; }
+  .room-card .badge { font-size: 12px; }
+}

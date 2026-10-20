@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142e2b">
+  <meta name="description" content="บ้านพร้อม ระบบจัดการห้องพัก ผู้เช่า และค่าเช่าสำหรับเจ้าของหอพัก">
+  <title>บ้านพร้อม · จัดการหอพัก</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23142e2b'/%3E%3Cpath d='M8 25V7h16v18M12 11h3m3 0h3m-9 5h3m3 0h3m-7 9v-5h4v5' stroke='%2392d9c3' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="readability.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a href="#main" class="skip-link">ข้ามไปยังเนื้อหา</a>
+  <div id="backdrop" class="backdrop" hidden></div>
+  <aside class="sidebar" id="sidebar" aria-label="เมนูหลัก">
+    <a class="brand" href="#overview"><span class="brand-symbol" data-icon="building"></span><span>บ้านพร้อม<small>BAANPROM RESIDENCE</small></span></a>
+    <div class="property-switch"><span class="property-mark" data-icon="home"></span><div><strong>หอพักบ้านพร้อม</strong><small>24 ห้อง · 3 ชั้น</small></div><span class="tiny" data-icon="chevron"></span></div>
+    <div class="nav-label">จัดการหอพัก</div>
+    <nav id="navigation">
+      <a href="#overview" data-view="overview"><span data-icon="dashboard"></span>ภาพรวม</a>
+      <a href="#rooms" data-view="rooms"><span data-icon="door"></span>ห้องพัก<span class="nav-count">24</span></a>
+      <a href="#tenants" data-view="tenants"><span data-icon="users"></span>ผู้เช่า</a>
+      <a href="#payments" data-view="payments"><span data-icon="receipt"></span>ค่าเช่าและการชำระเงิน<span id="unpaid-count" class="nav-count notice"></span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="occupancy-note"><div><span>อัตราการเข้าพัก</span><strong id="occupancy-percent">75%</strong></div><div class="progress-track"><i id="occupancy-progress"></i></div><small id="occupancy-caption">18 จาก 24 ห้องมีผู้เช่า</small></div>
+      <div class="user-profile"><span class="avatar admin">พ</span><div><strong>ผู้ดูแลหอพัก</strong><small>เจ้าของหอพัก</small></div><span data-icon="shield"></span></div>
+    </div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <div class="breadcrumb"><button class="icon-button mobile-menu" id="menu-button" aria-label="เปิดเมนู" aria-expanded="false"><span data-icon="menu"></span></button><span>หอพักบ้านพร้อม</span><span class="breadcrumb-slash">/</span><strong id="breadcrumb-view">ภาพรวม</strong></div>
+      <div class="header-actions"><span class="demo-tag">ข้อมูลตัวอย่าง</span><button class="icon-button notification" id="notification-button" aria-label="ดูค่าเช่าค้างชำระ"><span data-icon="bell"></span><i id="notification-dot"></i></button><span class="avatar admin compact">พ</span></div>
+    </header>
+    <main id="main" tabindex="-1">
+      <div class="page-heading"><div><div class="eyebrow" id="page-eyebrow">YOUR PROPERTY, AT A GLANCE</div><h1 id="page-title">ภาพรวมของหอพัก</h1><p id="page-description">ทุกเรื่องของหอพัก อยู่ในที่เดียว</p></div><div class="heading-actions"><label class="month-picker"><span data-icon="calendar"></span><select id="month-select" aria-label="เดือนที่ต้องการดู"><option value="2026-10">ตุลาคม 2569</option><option value="2026-09">กันยายน 2569</option><option value="2026-08">สิงหาคม 2569</option></select></label><button class="button primary" id="add-tenant"><span data-icon="plus"></span>เพิ่มผู้เช่า</button></div></div>
+      <div id="view-content"></div>
+      <footer class="page-footer"><span><span data-icon="shield"></span> บ้านพร้อม · จัดการหอพักอย่างสบายใจ</span><span id="saved-label">กำลังโหลดข้อมูล…</span></footer>
+    </main>
+  </div>
+  <dialog id="editor-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><div><span class="eyebrow" id="dialog-eyebrow">จัดการหอพัก</span><h2 id="dialog-title"></h2></div><button class="icon-button" id="close-dialog" aria-label="ปิดหน้าต่าง"><span data-icon="close"></span></button></div><div id="dialog-body"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
